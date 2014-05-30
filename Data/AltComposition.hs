@@ -35,7 +35,7 @@
 -- And so on, to @.::@, @.::.@, etc. This is the approach taken by
 -- the "composition" package, which inspired this one. It can be found at:
 --
--- <http://hackage.haskell.org/package/composition-1.0.1.0/docs/Data-Composition.html>
+-- <http://hackage.haskell.org/package/composition>
 --
 -- This package is included in (and re-exported from) this AltComposition.
 --
@@ -54,17 +54,51 @@
 --
 -- > *%*.**
 --
--- Takes a binary function, and composes it with a ternary function, aplying its result as
--- the middle parameter.
+-- Takes a binary function, and composes it with a ternary function,
+-- aplying its result as the middle parameter.
 --
 -- Its all a matter of opinion, and I strongly recomend that you use standard
 -- haskell syntax instead of these, for more portable code.
 --
--- But I honestly prefer these, I find them clearer.
+-- Also, many of these verbose operators have simpler counterparts.
+-- This is either noted as Deprecation, or a single note.
 --
--- If you need even higher arity, first check your code, then refactor your code, and if you
--- still need it, please send a pull request!
-module Data.AltComposition where
+-- However, I still find myself writing the @*%.***@ operators myself, and I trust
+-- the deprecations to warn me about the simpler alternatives.
+--
+-- If you need even higher arity, first check your code, then refactor your code,
+-- and if you still need it, please send a pull request!
+--
+module Data.AltComposition (
+    module Data.Composition
+  , (%.**)
+  , (%.***)
+  , (%.****)
+  , (%*.*)
+  , (%*.**)
+  , (%*.***)
+  {-, (%*.****)-}
+  , (*%.*)
+  , (*%.**)
+  , (*%.***)
+  {-, (*%.****)-}
+  , (%**.*)
+  , (%**.**)
+  , (%**.***)
+  {-, (%**.****)-}
+  , (*%*.*)
+  , (*%*.**)
+  , (*%*.***)
+  {-, (*%*.****)-}
+  , (**%.*)
+  , (**%.**)
+  , (**%.***)
+  {-, (**%.****)-}
+  , (%***.*)
+  , (%***.**)
+  ) where
+
+import Data.Composition
 
 -- | Compose a binary function with a unitary function
 --
@@ -86,9 +120,25 @@ infixr 9 %.**
 -- > (.).(.).(.) :: (d -> e) -> (a -> b -> c -> d) -> (a -> b -> c -> e)
 --
 -- > (f %.*** g) x y z = f (g x y z)
+--
+-- > (f .:. g) x y z = f (g x y z)
 (%.***) :: (d -> e) -> (a -> b -> c -> d) -> a -> b -> c -> e
 (f %.*** g) x y z = f (g x y z)
 infixr 9 %.***
+
+-- | Compose a quaternary function with a unitary function
+--
+-- /Note/: you should use idiomatic haskell instead
+--
+-- > (.).(.).(.).(.) :: (e -> f) -> (a -> b -> c -> d -> e) -> (a -> b -> c -> d -> f)
+--
+-- > (f %.**** g) w x y z = f (g w x y z)
+--
+-- > (f .:: g) w x y z = f (g w x y z)
+(%.****) :: (e -> f) -> (a -> b -> c -> d -> e) -> a -> b -> c -> d -> f
+(f %.**** g) w x y z = f (g w x y z)
+infixr 9 %.****
+
 
 -- | Compose a unary function with a binary function,
 -- applying the result of the unary function as the
@@ -106,6 +156,8 @@ infixr 9 %*.*
 -- applying the result of the unary function as the
 -- second parameter of the binary function.
 --
+-- /Note/: DO NOT USE. Equivalent to @flip f . g@.
+--
 -- > (f *%.* g) x y = f y (g x)
 (*%.*) :: (b -> c -> d) -> (a -> c) -> a -> b -> d
 (f *%.* g) x y = f y (g x)
@@ -114,6 +166,8 @@ infixr 9 *%.*
 -- | Compose a unary function with a ternary function,
 -- applying the result of the unary function as the
 -- first parameter of the ternary function.
+--
+-- /Note/: DO NOT USE. Equivalent to @.@.
 --
 -- > (f %**.* g) x y z = f (g x) y z
 (%**.*) :: (b -> c -> d -> e) -> (a -> b) -> a -> c -> d -> e
@@ -143,15 +197,19 @@ infix 9 **%.*
 -- applying the result of the first binary function as the
 -- first parameter of the second binary function.
 --
+-- /Note/: DO NOT USE. Equivalent to @flip f . g@.
+--
 -- > (f %*.** g) x y z = f (g x y) z
 (%*.**) :: (c -> d -> e) -> (a -> b -> c) -> a -> b -> d -> e
 (f %*.** g) x y z = f (g x y) z
 infixr 9 %*.**
-{-# DEPRECATED (%*.**) "Use f %.** g instead" #-}
+{-# DEPRECATED (%*.**) "Use f %.** g or .: instead" #-}
 
 -- | Compose a binary function with another binary function,
 -- applying the result of the first binary function as the
 -- second parameter of the second binary function.
+--
+-- /Note/: DO NOT USE. Equivalent to @flip f .: g@ or @flip f %.** g@.
 --
 -- > (f *%.** g) x y z = f z (g x y)
 (*%.**) :: (c -> d -> e) -> (a -> b -> d) -> a -> b -> c -> e
@@ -172,6 +230,8 @@ infix 9 %*.***
 -- applying the result of the ternary function as the
 -- second parameter of the binary function.
 --
+-- /Note/: DO NOT USE. Equivalent to @flip f .:. g@ or @flip f %.*** g@.
+--
 -- > (f *%.*** g) x y w z = f z (g x y w)
 (*%.***) :: (d -> e -> f) -> (a -> b -> c -> e) -> a -> b -> c -> d -> f
 (f *%.*** g) x y w z = f z (g x y w)
@@ -185,15 +245,19 @@ infix 9 *%.***
 (%**.**) :: (c -> d -> e -> f) -> (a -> b -> c) -> a -> b -> d -> e -> f
 (f %**.** g) x y w z = f (g x y) w z
 infix 9 %**.**
+{-# DEPRECATED (%**.**) "Use f %.** g or f .: instead" #-}
 
 -- | Compose a binary function with a ternary function,
 -- applying the result of the binary function as the
 -- second parameter of the ternary function.
 --
+-- /Note/: DO NOT USE. Equivalent to @flip f .: g@ or @flip f %.** g@.
+--
 -- > (f *%*.** g) x y w z = f w (g x y) z
 (*%*.**) :: (c -> d -> e -> f) -> (a -> b -> d) -> a -> b -> c -> e -> f
 (f *%*.** g) x y w z = f w (g x y) z
 infix 9 *%*.**
+{-# DEPRECATED (*%*.**) "Use f *%.** g instead" #-}
 
 -- | Compose a binary function with a ternary function,
 -- applying the result of the binary function as the
@@ -212,15 +276,19 @@ infix 9 **%.**
 (%**.***) :: (f -> d -> e -> g) -> (a -> b -> c -> f) -> a -> b -> c -> d -> e -> g
 (f %**.*** g) v w x y z = f (g v w x) y z
 infix 9 %**.***
+{-# DEPRECATED (%**.***) "Use f %.*** g or f .:. instead" #-}
 
 -- | Compose a ternary function with another ternary function,
 -- applying the result of the first ternary function as the
 -- second parameter of the last ternary function.
 --
+-- /Note/: DO NOT USE. Equivalent to @flip f .:. g@ or @flip f %.*** g@.
+--
 -- > (f *%*.*** g) v w x y z = f y (g v w x) z
 (*%*.***) ::  (d -> f -> e -> g) -> (a -> b -> c -> f) -> a -> b -> c -> d -> e -> g
 (f *%*.*** g) v w x y z = f y (g v w x) z
 infix 9 *%*.***
+{-# DEPRECATED (*%*.***) "Use f *%.*** g instead" #-}
 
 -- | Compose a ternary function with another ternary function,
 -- applying the result of the first ternary function as the
@@ -249,4 +317,4 @@ infix 9 %***.*
 (%***.**) ::  (f -> c -> d -> e -> g) -> (a -> b -> f) -> a -> b -> c -> d -> e -> g
 (f %***.** g) v w x y z = f (g v w) x y z
 infix 9 %***.**
-
+{-# DEPRECATED (%***.**) "This is the same as just %.** or .:" #-}

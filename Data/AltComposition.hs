@@ -11,7 +11,7 @@
 --
 -- > (.).(.) :: (c -> d) -> (a -> b -> c) -> (a -> b -> d)
 --
--- And it is quite general:
+-- And this is quite general:
 --
 -- > ((.).(.).(.)) :: (d -> e) -> (a -> b -> c -> d) -> (a -> b -> c -> e)
 --

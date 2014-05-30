@@ -96,9 +96,15 @@ module Data.AltComposition (
   {-, (**%.****)-}
   , (%***.*)
   , (%***.**)
+  , (?.)
+  , (.$)
+  , (§)
+  , (&&\)
+  , (||\)
   ) where
 
 import Data.Composition
+import qualified Control.Category as Cat
 
 -- | Compose a binary function with a unitary function
 --
@@ -318,3 +324,48 @@ infix 9 %***.*
 (f %***.** g) v w x y z = f (g v w) x y z
 infix 9 %***.**
 {-# DEPRECATED (%***.**) "This is the same as just %.** or .:" #-}
+
+-- | Conditional composition. Borrowed (and modified) from
+-- <http://hackage.haskell.org/package/cond-0.4.0.2>
+-- If the predicate is False, 'id' is returned
+-- instead of the second argument. This function, for example, can be used to
+-- conditionally add functions to a composition chain.
+(?.) :: (Cat.Category cat) => Bool -> cat a a -> cat a a
+p ?. c = if p then c else Cat.id
+{-# INLINE (?.) #-}
+
+-- | Slightly Lower fixity function composition for use with @'?.'@.
+(.$) :: (b -> c) -> (a -> b) -> (a -> c)
+(.$) = (Prelude..)
+infixl 8 .$
+
+-- | Just like (@'$'@), but with higher precedence than (@'<>'@), but still lower
+-- than (@'.'@). Similar to "Diagrams.Util" @'#'@, but without flipped arguments.
+{-# INLINE (§) #-}
+(§) :: (a -> b) -> a -> b
+f § x =  f x
+infixr 8 §
+
+-- | Group conditions with @'&&'@. Useful for filter.
+--
+-- /Note/: an easy mnemonic to remember is that operators ending in \\ (lambda)
+-- imply that their parameters are functions instead of values (in this particular
+-- case, boolean tests)
+--
+-- > (f &&\ g) x = f x && g x
+(&&\) :: (a -> Bool) -> (a -> Bool) -> (a -> Bool)
+(f &&\ g) x = f x && g x
+infixr 3 &&\{- This comment tells CPP to behave -}
+
+-- | Group conditions with @'||'@ Useful for filter.
+--
+-- /Note/: an easy mnemonic to remember is that operators ending in \\ (lambda)
+-- imply that their parameters are functions instead of values (in this particular
+-- case, boolean tests)
+--
+-- > (f ||\ g) x = f x || g x
+(||\) :: (a -> Bool) -> (a -> Bool) -> (a -> Bool)
+(f ||\ g) x = f x || g x
+infixr 2 ||\{- This comment tells CPP to behave -}
+
+

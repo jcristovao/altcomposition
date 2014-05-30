@@ -1,5 +1,5 @@
 name:                altcomposition
-version:             0.1.0.0
+version:             0.2.0.0
 synopsis:            Alternative combinators for unorthodox function composition
 -- description:         
 homepage:            https://github.com/jcristovao/altcomposition
@@ -18,7 +18,6 @@ cabal-version:       >=1.16
 
 library
   exposed-modules:     Data.AltComposition
-  default-extensions:  NoImplicitPrelude
   build-depends:       base         >= 4.0    && < 4.8
                     ,  composition  >= 1.0    && < 1.1
   default-language:    Haskell2010

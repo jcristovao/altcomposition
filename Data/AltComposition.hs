@@ -101,6 +101,8 @@ module Data.AltComposition (
   , (§)
   , (&&\)
   , (||\)
+  , for
+  , with
   ) where
 
 import Data.Composition
@@ -367,5 +369,15 @@ infixr 3 &&\{- This comment tells CPP to behave -}
 (||\) :: (a -> Bool) -> (a -> Bool) -> (a -> Bool)
 (f ||\ g) x = f x || g x
 infixr 2 ||\{- This comment tells CPP to behave -}
+
+-- | fmap with its arguments reversed.
+--
+-- <http://www.reddit.com/r/haskell/comments/qy990/suggestion_for_flip_map/>
+--
+-- > for  = flip fmap
+-- > with = flip fmap
+for,with :: (Functor f) => f a -> (a -> b) -> f b
+for = flip fmap
+with= flip fmap
 
 

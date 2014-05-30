@@ -55,7 +55,7 @@ The scheme proposed here is a little more verbose than the one from the
 result of the first function is applied on the second function using the
 ```%``` symbol (remember printf ```%```). So, the following operator:
 
-```*%*.**```
+```*%*.** ```
 
 Takes a binary function, and composes it with a ternary function,
 aplying its result as the middle parameter.

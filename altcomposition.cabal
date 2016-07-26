@@ -18,7 +18,7 @@ cabal-version:       >=1.16
 
 library
   exposed-modules:     Data.AltComposition
-  build-depends:       base         >= 4.0    && < 4.9
+  build-depends:       base         >= 4.0    && < 4.11
                     ,  composition  >= 1.0    && < 1.1
   default-language:    Haskell2010
   ghc-options:         -Wall
